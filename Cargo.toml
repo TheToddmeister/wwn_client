@@ -1,0 +1,30 @@
+[package]
+name = "frontend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+wwn_shared_utils={git = "https://github.com/TheToddmeister/wwn_shared_utils.git"}
+
+
+leptos = { version = "0.6", features = ["nightly", "csr", "tracing", "trace-component-props"] }
+leptos-use = { version = "0.10.4", features = ["serde_json", "serde", "num"] }
+leptos-struct-table = { version = "0.9.1", features = ["chrono", "uuid"] }
+chrono = { version = "0.4", features = ["serde"] }
+console_error_panic_hook = "0.1"
+console_log = "1"
+log = "0.4"
+gloo-net = "0.5.0"
+thiserror = "1.0.57"
+http = "1.1.0"
+
+serde_json = "1.0.114"
+serde = { version = "1.0.197", features = ["derive"] }
+itertools = "0.12.1"
+tracing = "0.1.40"
+
+[dev-dependencies]
+wasm-bindgen = "0.2"
+wasm-bindgen-test = "0.3.0"
+web-sys = "0.3"
+tokio = { version = "1.36.0", features = ["macros", "rt"] }
