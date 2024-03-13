@@ -8,12 +8,16 @@ use wwn_shared_utils::location::LocationType::MeasuringStation;
 use wwn_shared_utils::mapping::Origin::CANADA;
 use wwn_shared_utils::mapping::Regulation::NOTDOWNLOADED;
 use wwn_shared_utils::station::Station;
+use crate::style::tables::TableDecorationPreset;
 
 use crate::data::{fetch_locations, fetch_stations};
 
 /// This generates the component MinimalStationTable
 #[derive(TableRow, Clone)]
-#[table(impl_vec_data_provider)]
+#[table(
+sortable,
+impl_vec_data_provider,
+classes_provider ="TableDecorationPreset")]
 pub struct StationList {
     pub id: String,
     pub river: Vec<String>,
@@ -83,14 +87,14 @@ pub fn MinimalStationList() -> impl IntoView {
 
     let data = move || match (stations_resource.get(), location_resource.get()) {
         (Some(Ok(vs)), Some(Ok(vl))) => {
-            let srows = vs.iter()
-                .map(|s| StationList::from_station(s));
+            let mut srows = vs.iter()
+                .map(|s| StationList::from_station(s)).collect_vec();
             let lrows = vl.iter()
-                .map(|l| StationList::from_location(l));
-            let rows = srows.extend(lrows);
+                .map(|l| StationList::from_location(l)).collect_vec();
+           srows.extend(lrows);
             let view = view! {
                     <table>
-                        <TableContent rows/>
+                        <TableContent rows=srows/>
                      </table>
                 };
             view.into_view()
@@ -120,11 +124,11 @@ pub fn MinimalStationList() -> impl IntoView {
 
 
     view! {
-        <div>
-                <div>
-                    <h1> "something" </h1>
-                    {data}
-                </div>
+            <div class="rounded-md overflow-clip m-10 border dark:border-gray-700 float-left".to_string()>
+        <h1> "something" </h1>
+            <table class="text-sm text-left text-gray-500 dark:text-gray-400 mb-[-1px]">
+                {data}
+            </table>
         </div>
         }
 }

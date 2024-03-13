@@ -11,7 +11,7 @@ use crate::State::*;
 pub mod error;
 pub mod data;
 pub mod tables;
-
+pub mod style;
 pub async fn fetch_data<T: DataTable + DeserializeOwned + Serializable>(filter: T::FilterType) -> Result<Vec<T>, crate::error::Error> {
     let url = format!("http://127.0.0.1:3033{}", T::ENDPOINT);
     let response = gloo_net::http::Request::post(&url)
