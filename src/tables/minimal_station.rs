@@ -3,9 +3,7 @@ use itertools::Itertools;
 use leptos::{component, create_local_resource, IntoView, SignalGet, view};
 use leptos::*;
 use leptos_struct_table::*;
-use wwn_shared_utils::location::{Location, LocationFilter};
-use wwn_shared_utils::location::LocationType::MeasuringStation;
-use wwn_shared_utils::mapping::Origin::CANADA;
+use wwn_shared_utils::location::{Location};
 use wwn_shared_utils::mapping::Regulation::NOTDOWNLOADED;
 use wwn_shared_utils::station::Station;
 use crate::style::tables::TableDecorationPreset;
@@ -73,17 +71,9 @@ impl StationList {
 }
 
 #[component]
-pub fn MinimalStationList() -> impl IntoView {
+pub fn StationListTable() -> impl IntoView {
     let stations_resource = create_local_resource(|| (), |_| async move { fetch_stations().await });
-    let location_resource = create_local_resource(|| (), |_| async move {
-        fetch_locations(
-            LocationFilter {
-                origin: vec![CANADA],
-                nation: vec![],
-                id: vec![],
-                loc_type: vec![MeasuringStation],
-            }).await
-    });
+    let location_resource = create_local_resource(|| (), |_| async move { fetch_locations().await});
 
     let data = move || match (stations_resource.get(), location_resource.get()) {
         (Some(Ok(vs)), Some(Ok(vl))) => {
@@ -110,13 +100,13 @@ pub fn MinimalStationList() -> impl IntoView {
             view.into_view()
         }
         (Some(Err(e)), _) => {
-            let error_message = "ErrorMessage: ".to_string() + &e;
+            let error_message = "ErrorMessage: Found the stations, but not the necessary locations".to_string() + &e;
             let view = view! {<p> {error_message} </p>};
             view.into_view()
         }
 
         (_, Some(Err(e))) => {
-            let error_message = "ErrorMessage: ".to_string() + &e;
+            let error_message = "ErrorMessage: Found the locations, but not the necessary stations ".to_string() + &e;
             let view = view! {<p> {error_message} </p>};
             view.into_view()
         }

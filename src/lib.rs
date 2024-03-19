@@ -12,6 +12,9 @@ pub mod error;
 pub mod data;
 pub mod tables;
 pub mod style;
+pub mod status;
+pub mod fetch_storage;
+
 pub async fn fetch_data<T: DataTable + DeserializeOwned + Serializable>(filter: T::FilterType) -> Result<Vec<T>, crate::error::Error> {
     let url = format!("http://127.0.0.1:3033{}", T::ENDPOINT);
     let response = gloo_net::http::Request::post(&url)
@@ -35,6 +38,7 @@ pub fn get_awaiting_resource_task<T: Serialize + Clone>(data: Resource<(), Resul
 }
 
 pub enum State<T> {
+    NotRequested(String),
     Failed(String),
     Finished(Vec<T>),
     Waiting(String),

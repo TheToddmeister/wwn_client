@@ -1,9 +1,6 @@
 use http::status::InvalidStatusCode;
-use leptos::{component, IntoView, Resource, Serializable, View, view};
-use serde::de::DeserializeOwned;
-use serde::Serialize;
-use wwn_shared_utils::DataTable;
-use crate::handle_response_status;
+use leptos::{component, IntoView, View, view};
+
 
 #[derive(thiserror::Error, Debug)]
 #[non_exhaustive]
@@ -27,6 +24,8 @@ pub enum Error {
     SerdeError(#[from] serde_json::Error),
     #[error("{0}")]
     GlooError(#[from] gloo_net::Error),
+    #[error("Did not receive the expected data from server ")]
+    EmptyDataResponseError,
 }
 
 #[component]
