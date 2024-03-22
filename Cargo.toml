@@ -7,17 +7,25 @@ edition = "2021"
 wwn_shared_utils={git = "https://github.com/TheToddmeister/wwn_shared_utils.git"}
 
 leptos = { version = "0.6", features = ["nightly", "csr", "tracing", "trace-component-props"] }
-leptos-use = { version = "0.10.4", features = ["serde_json", "serde", "num"] }
-leptos-struct-table = { version = "0.9.1", features = ["chrono", "uuid"] }
 leptos_router = { version = "0.6.9", features = ["csr", "nightly"] }
+leptos_meta = { version = "0.6.9", features = ["nightly", "csr"] }
+leptos-use = { version = "0.10.5", features = [ "serde_json", "serde", "num"] }
+leptos-struct-table = { version = "0.9.1", features = ["chrono", "uuid"] }
+
+leptos_query = { version = "0.5.3", features = ["tokio", "local_storage", "csr"] }
+leptos_query_devtools = { version = "0.1.3", features = ["csr", "wasm-bindgen"] }
+leptos-mview = "0.3.0"
+leptos_theme = "0.1.2"
+
+
 
 
 chrono = { version = "0.4", features = ["serde"] }
-console_error_panic_hook = "0.1"
+console_error_panic_hook = "0.1.7"
 console_log = "1"
-log = "0.4"
+log = "0.4.21"
 gloo-net = "0.5.0"
-thiserror = "1.0.57"
+thiserror = "1.0.58"
 http = "1.1.0"
 
 serde_json = "1.0.114"
@@ -25,15 +33,11 @@ serde = { version = "1.0.197", features = ["derive"] }
 itertools = "0.12.1"
 tracing = "0.1.40"
 tokio = { version = "1.36.0", features = ["macros"] }
-leptos_query = { version = "0.5.3", features = ["tokio", "local_storage", ] }
 
 [dev-dependencies]
-wasm-bindgen = "0.2"
-wasm-bindgen-test = "0.3.0"
-web-sys = "0.3"
+wasm-bindgen = "0.2.92"
+wasm-bindgen-test = "0.3.42"
+web-sys = "0.3.69"
 tokio = { version = "1.36.0", features = ["macros", "rt"] }
 
 [features]
-hydrate = [
-    "leptos_query/hydrate",
-]

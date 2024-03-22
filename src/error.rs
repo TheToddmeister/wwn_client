@@ -1,16 +1,18 @@
 use http::status::InvalidStatusCode;
+use http::StatusCode;
 use leptos::{component, IntoView, View, view};
+use serde::{Deserialize, Serialize};
 
 
 #[derive(thiserror::Error, Debug)]
 #[non_exhaustive]
 pub enum HttpError {
-    #[error("{0} {1}")]
-    ServerError(u16, http::StatusCode),
-    #[error("{0} {1}")]
-    ClientError(u16, http::StatusCode),
-    #[error("{0} {1}")]
-    UndefinedHttpError(u16, http::StatusCode),
+    #[error("{0} {1} {2}")]
+    ServerError(u16, StatusCode, String),
+    #[error("{0} {1} {2}")]
+    ClientError(u16, StatusCode, String),
+    #[error("{0} {1} {2} ")]
+    UndefinedHttpError(u16, http::StatusCode, String),
     #[error("{0}")]
     InvalidStatusCode(#[from] InvalidStatusCode),
 }

@@ -1,21 +1,24 @@
 #[allow(warnings)]
 use itertools::Itertools;
-use leptos::{component, create_local_resource, IntoView, SignalGet, view};
+use leptos::{component, IntoView, SignalGet, view};
 use leptos::*;
+use leptos_query::*;
 use leptos_struct_table::*;
-use wwn_shared_utils::location::{Location};
+use wwn_shared_utils::location::Location;
 use wwn_shared_utils::mapping::Regulation::NOTDOWNLOADED;
-use wwn_shared_utils::station::Station;
-use crate::style::tables::TableDecorationPreset;
+use wwn_shared_utils::station::{Station, StationFilter};
 
-use crate::data::{fetch_locations, fetch_stations};
+use crate::components::{Loud, Spinner};
+use crate::style::definitions::HEADER_CLASS;
+use crate::style::tables::TableDecorationPreset;
+use crate::table_query;
 
 /// This generates the component MinimalStationTable
 #[derive(TableRow, Clone)]
 #[table(
 sortable,
 impl_vec_data_provider,
-classes_provider ="TableDecorationPreset")]
+classes_provider = "TableDecorationPreset")]
 pub struct StationList {
     pub id: String,
     pub river: Vec<String>,
@@ -38,7 +41,7 @@ impl StationList {
             .collect_vec();
         let l = &s.location;
         Self {
-            id: s.station_id.to_string(),
+            id: s.source_id.to_string(),
             river: s.river_name.to_vec(),
             parameters,
             regulation: s.regulation_status.to_string(),
@@ -71,54 +74,33 @@ impl StationList {
 }
 
 #[component]
-pub fn StationListTable() -> impl IntoView {
-    let stations_resource = create_local_resource(|| (), |_| async move { fetch_stations().await });
-    let location_resource = create_local_resource(|| (), |_| async move { fetch_locations().await});
-
-    let data = move || match (stations_resource.get(), location_resource.get()) {
-        (Some(Ok(vs)), Some(Ok(vl))) => {
-            let mut srows = vs.iter()
-                .map(|s| StationList::from_station(s)).collect_vec();
-            let lrows = vl.iter()
-                .map(|l| StationList::from_location(l)).collect_vec();
-           srows.extend(lrows);
-            let view = view! {
-                    <table>
-                        <TableContent rows=srows/>
-                     </table>
-                };
-            view.into_view()
-        }
-        (None, _) => {
-            let waiting_message = "Waiting ".to_string();
-            let view = view! {<p> {waiting_message} </p>};
-            view.into_view()
-        }
-        (_, None) => {
-            let waiting_message = "Waiting ".to_string();
-            let view = view! {<p> {waiting_message} </p>};
-            view.into_view()
-        }
-        (Some(Err(e)), _) => {
-            let error_message = "ErrorMessage: Found the stations, but not the necessary locations".to_string() + &e;
-            let view = view! {<p> {error_message} </p>};
-            view.into_view()
-        }
-
-        (_, Some(Err(e))) => {
-            let error_message = "ErrorMessage: Found the locations, but not the necessary stations ".to_string() + &e;
-            let view = view! {<p> {error_message} </p>};
-            view.into_view()
-        }
-    };
-
-
+pub fn StationListApp() -> impl IntoView {
+    let query = table_query::<Station>().use_query(move || StationFilter::test_default());
+    let data = query.data;
+    let fetching = query.is_fetching;
     view! {
-            <div class="rounded-md overflow-clip m-10 border dark:border-gray-700 float-left".to_string()>
-        <h1> "something" </h1>
-            <table class="text-sm text-left text-gray-500 dark:text-gray-400 mb-[-1px]">
-                {data}
-            </table>
-        </div>
-        }
+       <div>
+           <Transition
+               fallback=move || {
+                   view! { <h2>"Loading..."</h2> }
+               }>
+               {move || {data.get().map(|result| {
+                   match result {Ok(v)=>{
+                       let table = v.iter().map(|q| StationList::from_station(q)).collect_vec();
+                       view! {
+                           <div>
+                           <h2>{v.len()}</h2>
+                           <table>
+                                <TableContent rows=table/>
+                           </table>
+                           <h2>{v.len()}</h2>
+                           </div>
+                       }},
+                       Err(e) => view! { <div><h2>e</h2></div> } }
+
+                        })
+               }}
+           </Transition>
+       </div>
+    }
 }

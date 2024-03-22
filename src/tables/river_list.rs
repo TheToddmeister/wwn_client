@@ -4,7 +4,6 @@ use leptos::{component, create_local_resource, IntoView, SignalGet, view};
 use leptos_struct_table::*;
 use wwn_shared_utils::river::River;
 
-use crate::data::fetch_rivers;
 use crate::style::tables::TableDecorationPreset;
 
 #[derive(TableRow, Clone)]
@@ -37,37 +36,5 @@ impl RiverList {
 
 #[component]
 pub fn RiverListTable() -> impl IntoView {
-    let river_resource = create_local_resource(|| (), |_| async move { fetch_rivers().await });
-
-    let data = move || match river_resource.get() {
-        Some(Ok(vs)) => {
-            let rows = vs.iter()
-                .map(|r| RiverList::from_river(r))
-                .collect_vec();
-            let view = view! {
-                    <table>
-                        <TableContent rows/>
-                     </table>
-                };
-            view.into_view()
-        }
-        None => {
-            let waiting_message = "Waiting ".to_string();
-            let view = view! {<p> {waiting_message} </p>};
-            view.into_view()
-        }
-        Some(Err(_)) => {
-            let error_message = "ErrorMessage: ".to_string();
-            let view = view! {<p> {error_message} </p>};
-            view.into_view()
-        }
-    };
-    view! {
-        <div>
-                <div>
-                    <h1> "something" </h1>
-                    {data}
-                </div>
-        </div>
-        }
+    todo!()
 }
